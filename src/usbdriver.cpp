@@ -8,6 +8,16 @@
 
 #include "tusb.h"
 #include "drivermanager.h"
+#include "usbdriver.h"
+
+UsbDebugCounters usbDebug = {};
+
+// Every device event TinyUSB queues, counted by id (DCD_EVENT_*), to see where a host stops talking to us.
+void tud_event_hook_cb(uint8_t rhport, uint32_t eventid, bool in_isr) {
+	(void)rhport;
+	(void)in_isr;
+	if (eventid < 8) usbDebug.events[eventid]++;
+}
 
 static bool usb_mounted;
 static bool usb_suspended;
@@ -38,6 +48,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
 // Invoked when device is mounted
 void tud_mount_cb(void)
 {
+	usbDebug.mounts++;
 	usb_mounted = true;
 	usb_suspended = false;
 }
@@ -45,6 +56,7 @@ void tud_mount_cb(void)
 // Invoked when device is unmounted
 void tud_umount_cb(void)
 {
+	usbDebug.unmounts++;
 	usb_mounted = false;
 	usb_suspended = false;
 }
@@ -54,6 +66,7 @@ void tud_umount_cb(void)
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en) {
 	(void)remote_wakeup_en;
+	usbDebug.suspends++;
 	usb_suspended = true;
 }
 
@@ -72,12 +85,14 @@ bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage,
 // Invoked when received GET STRING DESCRIPTOR request
 // Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
 uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
+	usbDebug.strings++;
 	return DriverManager::getInstance().getDriver()->get_descriptor_string_cb(index, langid);
 }
 
 // Invoked when received GET DEVICE DESCRIPTOR
 // Application return pointer to descriptor
 uint8_t const *tud_descriptor_device_cb() {
+	usbDebug.deviceDescriptors++;
 	return DriverManager::getInstance().getDriver()->get_descriptor_device_cb();
 }
 
@@ -85,6 +100,7 @@ uint8_t const *tud_descriptor_device_cb() {
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
 uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
+	usbDebug.hidReportDescriptors++;
 	return DriverManager::getInstance().getDriver()->get_hid_descriptor_report_cb(itf);
 }
 
@@ -92,6 +108,7 @@ uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
 // Application return pointer to descriptor
 // Descriptor contents must exist long enough for transfer to complete
 uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
+	usbDebug.configDescriptors++;
 	return DriverManager::getInstance().getDriver()->get_descriptor_configuration_cb(index);
 }
 

@@ -3341,6 +3341,8 @@ std::string getConfig()
     *config.get() = Storage::getInstance().getConfig();
     config->has_switchIdentitySeed = false;
     config->switchIdentitySeed.size = 0;
+    config->has_networkInputKey = false;
+    config->networkInputKey.size = 0;
     return ConfigUtils::toJSON(*config.get());
 }
 
@@ -3354,6 +3356,8 @@ DataAndStatusCode setConfig()
         const Config& currentConfig = Storage::getInstance().getConfig();
         config->has_switchIdentitySeed = currentConfig.has_switchIdentitySeed;
         config->switchIdentitySeed = currentConfig.switchIdentitySeed;
+        config->has_networkInputKey = currentConfig.has_networkInputKey;
+        config->networkInputKey = currentConfig.networkInputKey;
         Storage::getInstance().getConfig() = *config.get();
         config.reset();
         if (Storage::getInstance().save(true))

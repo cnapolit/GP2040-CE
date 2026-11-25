@@ -299,6 +299,7 @@ src/addons/slider_profile.cpp
 src/addons/wiiext.cpp
 src/addons/input_macro.cpp
 src/addons/snes_input.cpp
+src/addons/network_input.cpp
 src/addons/tilt.cpp
 src/addons/spi_analog_ads1256.cpp
 src/addons/gamepad_usb_host.cpp
@@ -350,6 +351,9 @@ hardware_pwm
 PicoPeripherals
 WiiExtension
 SNESpad
+ioLibrary
+hardware_spi
+pico_unique_id
 pico_mbedtls
 nanopb
 )
@@ -399,6 +403,13 @@ target_include_directories(${PROJECT_NAME}  PRIVATE
   )
 
 pico_add_extra_outputs(${PROJECT_NAME})
+
+# A board with a network loader (netloader/) keeps the firmware behind it, in its own flash region.
+if(EXISTS ${CMAKE_SOURCE_DIR}/configs/${GP2040_BOARDCONFIG}/pico_flash_region.ld)
+  pico_add_linker_script_override_path(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/configs/${GP2040_BOARDCONFIG} FILES pico_flash_region.ld)
+  target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/netloader)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE NETLOADER_PRESENT=1)
+endif()
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_${CMAKE_PROJECT_VERSION}_${GP2040_BOARDCONFIG}.uf2

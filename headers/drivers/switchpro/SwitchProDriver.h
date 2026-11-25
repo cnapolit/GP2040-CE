@@ -30,7 +30,21 @@ public:
     virtual const uint8_t * get_descriptor_device_qualifier_cb();
     virtual uint16_t GetJoystickMidValue();
     virtual USBListener * get_usb_auth_listener() { return nullptr; }
+
+    // What the console has asked for so far, for the Network Input addon's status reply.
+    struct DebugInfo {
+        uint32_t setReports = 0;
+        uint8_t lastReportId = 0;
+        uint8_t lastSubId = 0;
+        uint8_t lastSubcommand = 0;
+    };
+    DebugInfo debugInfo() const { return debug; }
+    bool ready() const { return isReady; }
+    bool initialized() const { return isInitialized; }
+    uint8_t player() const { return playerID; }
+    uint8_t reportCounter() const { return last_report_counter; }
 private:
+    DebugInfo debug;
     SwitchControllerType controllerType = SWITCH_TYPE_PRO_CONTROLLER;
     SwitchControllerRegion controllerRegion = SWITCH_REGION_USA;
     bool joyConPair = false;

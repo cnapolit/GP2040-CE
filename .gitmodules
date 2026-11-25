@@ -6,3 +6,6 @@
 	path = lib/pico_pio_usb
 	url = https://github.com/speedypotato/Pico-PIO-USB.git
 	branch = fix-rx-enable
+[submodule "lib/ioLibrary/ioLibrary_Driver"]
+	path = lib/ioLibrary/ioLibrary_Driver
+	url = https://github.com/Wiznet/ioLibrary_Driver.git

@@ -1053,4 +1053,7 @@ message Config
 	optional BootModeOptions bootModeOptions = 16;
 
     optional bytes switchIdentitySeed = 17 [(nanopb).max_size = 16];
+
+    // Network Input: the key a client paired the board with, which its pad state and commands must carry.
+    optional bytes networkInputKey = 18 [(nanopb).max_size = 16];
 }

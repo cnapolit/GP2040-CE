@@ -24,3 +24,6 @@ www/src_gen/enums.ts
 
 # Language Server config
 .clangd
+
+# Satelight: local build folders (W5500 board, network loader)
+build-*/
